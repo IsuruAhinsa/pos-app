@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./resources/js/*"]
+        }
+    },
+    "exclude": ["node_modules", "vendor"],
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "include": [
+        "resources/js/**/*.js",
+        "resources/js/**/*.d.js",
+        "resources/js/**/*.jsx",
+        "resources/js/**/*.vue"
+    ]
+}
