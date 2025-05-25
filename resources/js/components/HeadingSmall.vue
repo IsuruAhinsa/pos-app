@@ -1,10 +1,15 @@
-<script setup lang="ts">
-interface Props {
-    title: string;
-    description?: string;
-}
-
-defineProps<Props>();
+<script setup>
+const props = defineProps({
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: false,
+        default: undefined
+    }
+});
 </script>
 
 <template>
