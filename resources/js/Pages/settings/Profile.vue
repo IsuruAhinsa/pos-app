@@ -11,8 +11,9 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { cn } from '@/lib/utils'
 import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxList, ComboboxTrigger } from '@/components/ui/combobox'
 import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
-import { ref } from 'vue'
+import {computed, ref, watch} from 'vue'
 import {ScrollArea} from "@/components/ui/scroll-area";
+import { parsePhoneNumberFromString, isValidPhoneNumber } from 'libphonenumber-js';
 
 defineProps({
     mustVerifyEmail: {
@@ -36,6 +37,16 @@ const breadcrumbs = [
 
 const page = usePage();
 const user = page.props.auth.user;
+const countryCode = ref('+94');
+const contactNumber = ref("");
+
+if (user.phone?.startsWith('+')) {
+    const parsed = parsePhoneNumberFromString(user.phone);
+    if (parsed) {
+        countryCode.value = `+${parsed.countryCallingCode}`;
+        contactNumber.value = parsed.nationalNumber;
+    }
+}
 
 const form = useForm({
     first_name: user.first_name,
@@ -44,14 +55,29 @@ const form = useForm({
     phone: user.phone,
 });
 
+watch([countryCode, contactNumber], ([code, number]) => {
+    const fullNumber = `${code}${number}`;
+    form.phone = fullNumber;
+});
+
+const phoneError = computed(() => {
+    const fullNumber = `${countryCode.value}${contactNumber.value}`;
+    try {
+        const phone = parsePhoneNumberFromString(fullNumber);
+        if (!phone || !phone.isValid()) {
+            return 'Invalid phone number.';
+        }
+    } catch {
+        return 'Invalid phone number.';
+    }
+    return null;
+});
+
 const submit = () => {
     form.patch(route('profile.update'), {
         preserveScroll: true,
     });
 };
-
-const countryCode = ref('+94');
-const contactNumber = ref("");
 </script>
 
 <template>
@@ -71,7 +97,7 @@ const contactNumber = ref("");
 
                     <div class="grid gap-2">
                         <Label for="last-name">Last Name</Label>
-                        <Input id="last-name" class="mt-1 block w-full" v-model="form.last_name" required autocomplete="last_name" placeholder="Last name" />
+                        <Input id="last-name" class="mt-1 block w-full" v-model="form.last_name" autocomplete="last_name" placeholder="Last name" />
                         <InputError class="mt-2" :message="form.errors.last_name" />
                     </div>
 
@@ -93,7 +119,7 @@ const contactNumber = ref("");
                         <Label for="phone">Phone</Label>
                         <div class="flex items-center">
                             <Combobox v-model="countryCode" by="label">
-                                <ComboboxAnchor as-child>
+                                <ComboboxAnchor as-child class="w-24">
                                     <ComboboxTrigger as-child>
                                         <Button variant="outline" class="justify-between rounded-r-none border-r-0">
                                             {{ countryCode }}
@@ -116,7 +142,7 @@ const contactNumber = ref("");
                                     </ComboboxEmpty>
 
                                     <ComboboxGroup>
-                                        <ScrollArea class="h-72 w-48">
+                                        <ScrollArea class="h-72">
                                             <ComboboxItem
                                                 v-for="(code, index) in countryCodes"
                                                 :key="index"
@@ -134,7 +160,7 @@ const contactNumber = ref("");
                             </Combobox>
                             <Input id="phone" class="mt-0 block w-full rounded-l-none" v-model="contactNumber" required autocomplete="phone" placeholder="Enter Phone Number" />
                         </div>
-                        <InputError class="mt-2" :message="form.errors.email" />
+                        <InputError :message="form.errors.phone || phoneError" />
                     </div>
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">
