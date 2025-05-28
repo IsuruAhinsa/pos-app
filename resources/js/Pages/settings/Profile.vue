@@ -1,6 +1,5 @@
-<script setup lang="ts">
+<script setup>
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-
 import DeleteUser from '@/components/DeleteUser.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
@@ -9,28 +8,40 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { type BreadcrumbItem, type SharedData, type User } from '@/types';
+import { cn } from '@/lib/utils'
+import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxList, ComboboxTrigger } from '@/components/ui/combobox'
+import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
+import { ref } from 'vue'
+import {ScrollArea} from "@/components/ui/scroll-area";
 
-interface Props {
-    mustVerifyEmail: boolean;
-    status?: string;
-}
+defineProps({
+    mustVerifyEmail: {
+        type: Boolean
+    },
+    status: {
+        type: String
+    },
+    countryCodes: {
+        type: Array,
+        default: () => [],
+    },
+})
 
-defineProps<Props>();
-
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs = [
     {
         title: 'Profile settings',
         href: '/settings/profile',
     },
 ];
 
-const page = usePage<SharedData>();
-const user = page.props.auth.user as User;
+const page = usePage();
+const user = page.props.auth.user;
 
 const form = useForm({
-    name: user.name,
+    first_name: user.first_name,
+    last_name: user.last_name,
     email: user.email,
+    phone: user.phone,
 });
 
 const submit = () => {
@@ -38,6 +49,9 @@ const submit = () => {
         preserveScroll: true,
     });
 };
+
+const countryCode = ref('+94');
+const contactNumber = ref("");
 </script>
 
 <template>
@@ -50,9 +64,15 @@ const submit = () => {
 
                 <form @submit.prevent="submit" class="space-y-6">
                     <div class="grid gap-2">
-                        <Label for="name">Name</Label>
-                        <Input id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name" placeholder="Full name" />
-                        <InputError class="mt-2" :message="form.errors.name" />
+                        <Label for="first-name">First Name</Label>
+                        <Input id="first-name" class="mt-1 block w-full" v-model="form.first_name" required autocomplete="first_name" placeholder="First name" />
+                        <InputError class="mt-2" :message="form.errors.first_name" />
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="last-name">Last Name</Label>
+                        <Input id="last-name" class="mt-1 block w-full" v-model="form.last_name" required autocomplete="last_name" placeholder="Last name" />
+                        <InputError class="mt-2" :message="form.errors.last_name" />
                     </div>
 
                     <div class="grid gap-2">
@@ -66,6 +86,54 @@ const submit = () => {
                             autocomplete="username"
                             placeholder="Email address"
                         />
+                        <InputError class="mt-2" :message="form.errors.email" />
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="phone">Phone</Label>
+                        <div class="flex items-center">
+                            <Combobox v-model="countryCode" by="label">
+                                <ComboboxAnchor as-child>
+                                    <ComboboxTrigger as-child>
+                                        <Button variant="outline" class="justify-between rounded-r-none border-r-0">
+                                            {{ countryCode }}
+
+                                            <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </ComboboxTrigger>
+                                </ComboboxAnchor>
+
+                                <ComboboxList>
+                                    <div class="relative w-full max-w-sm items-center">
+                                        <ComboboxInput class="focus-visible:ring-0 border-0 rounded-none h-10" placeholder="Select Country Code" />
+                                        <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
+          <Search class="size-4 text-muted-foreground" />
+        </span>
+                                    </div>
+
+                                    <ComboboxEmpty>
+                                        No country code found.
+                                    </ComboboxEmpty>
+
+                                    <ComboboxGroup>
+                                        <ScrollArea class="h-72 w-48">
+                                            <ComboboxItem
+                                                v-for="(code, index) in countryCodes"
+                                                :key="index"
+                                                :value="code"
+                                            >
+                                                {{ code }}
+
+                                                <ComboboxItemIndicator>
+                                                    <Check :class="cn('ml-auto h-4 w-4')" />
+                                                </ComboboxItemIndicator>
+                                            </ComboboxItem>
+                                        </ScrollArea>
+                                    </ComboboxGroup>
+                                </ComboboxList>
+                            </Combobox>
+                            <Input id="phone" class="mt-0 block w-full rounded-l-none" v-model="contactNumber" required autocomplete="phone" placeholder="Enter Phone Number" />
+                        </div>
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
 
