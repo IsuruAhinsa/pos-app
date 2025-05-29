@@ -1,36 +1,18 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Interfaces;
 
-use App\Interfaces\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-abstract class BaseRepository implements BaseRepositoryInterface
+interface BaseRepositoryInterface
 {
-    /**
-     * @var Model
-     */
-    protected $model;
-
-    /**
-     * BaseRepository constructor.
-     * @param Model $model
-     */
-    public function __construct(Model $model)
-    {
-        $this->model = $model;
-    }
-
     /**
      * Retrieve all records from the repository
      *
      * @return Collection Collection of all records
      */
-    public function getAll(): Collection
-    {
-        return $this->model->all();
-    }
+    public function getAll(): Collection;
 
     /**
      * Find a record by its unique identifier
@@ -38,10 +20,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param int $id ID of the record to find
      * @return Model|null The found model or null if not found
      */
-    public function find(int $id): ?Model
-    {
-        return $this->model->find($id);
-    }
+    public function find(int $id): ?Model;
 
     /**
      * Create a new record with the given data
@@ -49,10 +28,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param array<string, mixed> $data Data to create the record with
      * @return Model The created model
      */
-    public function create(array $data): Model
-    {
-        return $this->model->create($data);
-    }
+    public function create(array $data): Model;
 
     /**
      * Update an existing record with the given data
@@ -61,14 +37,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param array<string, mixed> $data Data to update the record with
      * @return bool Whether the update was successful
      */
-    public function update(int $id, array $data): bool
-    {
-        $record = $this->model->find($id);
-        if ($record) {
-            return $record->update($data);
-        }
-        return false;
-    }
+    public function update(int $id, array $data): bool;
 
     /**
      * Delete a record by its unique identifier
@@ -76,14 +45,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param int $id ID of the record to delete
      * @return bool Whether the deletion was successful
      */
-    public function delete(int $id): bool
-    {
-        $record = $this->model->find($id);
-        if ($record) {
-            return $record->delete();
-        }
-        return false;
-    }
+    public function delete(int $id): bool;
 
     /**
      * Find a record by a specific field value
@@ -92,10 +54,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param mixed $value The value to search for
      * @return Model|null The found model or null if not found
      */
-    public function findBy(string $field, mixed $value): ?Model
-    {
-        return $this->model->where($field, $value)->first();
-    }
+    public function findBy(string $field, mixed $value): ?Model;
 
     /**
      * Get all records matching a specific field value
@@ -104,8 +63,5 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param mixed $value The value to filter for
      * @return Collection Collection of matching records
      */
-    public function getWhere(string $field, mixed $value): Collection
-    {
-        return $this->model->where($field, $value)->get();
-    }
+    public function getWhere(string $field, mixed $value): Collection;
 }
