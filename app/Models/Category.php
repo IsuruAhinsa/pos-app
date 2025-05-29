@@ -11,7 +11,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Category extends Model
 {
-    use SoftDeletes, LogsActivity, Userstamps, NodeTrait;
+    use LogsActivity, NodeTrait, SoftDeletes, Userstamps;
 
     /**
      * The attributes that are mass assignable.

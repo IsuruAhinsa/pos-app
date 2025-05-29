@@ -15,7 +15,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * BaseRepository constructor.
-     * @param Model $model
      */
     public function __construct(Model $model)
     {
@@ -67,6 +66,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
         if ($record) {
             return $record->update($data);
         }
+
         return false;
     }
 
@@ -82,6 +82,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
         if ($record) {
             return $record->delete();
         }
+
         return false;
     }
 

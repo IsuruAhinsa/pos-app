@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\CategoryRepositoryInterface;
-use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Interfaces\CategoryRepositoryInterface;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
