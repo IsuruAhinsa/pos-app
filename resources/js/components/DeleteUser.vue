@@ -1,11 +1,9 @@
-<script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
-
-// Components
+<script setup>
+import {useForm} from '@inertiajs/vue3';
+import {ref} from 'vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
+import {Button} from '@/components/ui/button';
 import {
     Dialog,
     DialogClose,
@@ -16,16 +14,16 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
 
-const passwordInput = ref<HTMLInputElement | null>(null);
+const passwordInput = ref(null);
 
 const form = useForm({
     password: '',
 });
 
-const deleteUser = (e: Event) => {
+const deleteUser = (e) => {
     e.preventDefault();
 
     form.delete(route('profile.destroy'), {
