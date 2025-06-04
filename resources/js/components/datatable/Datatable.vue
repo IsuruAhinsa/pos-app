@@ -53,7 +53,7 @@ const props = defineProps({
     },
     searchColumn: {
         type: String,
-        default: 'title'
+        default: undefined
     },
     facetColumns: {
         type: Array,
@@ -72,6 +72,7 @@ const sorting = ref([])
 const columnFilters = ref([])
 const columnVisibility = ref({})
 const rowSelection = ref({})
+const globalFilter = ref('')
 
 const table = useVueTable({
     data: props.data,
@@ -81,6 +82,7 @@ const table = useVueTable({
         get columnFilters() { return columnFilters.value },
         get columnVisibility() { return columnVisibility.value },
         get rowSelection() { return rowSelection.value },
+        get globalFilter() { return globalFilter.value },
         get pagination() {
             return {
                 pageIndex: 0,
@@ -93,12 +95,14 @@ const table = useVueTable({
     onColumnFiltersChange: updater => valueUpdater(updater, columnFilters),
     onColumnVisibilityChange: updater => valueUpdater(updater, columnVisibility),
     onRowSelectionChange: updater => valueUpdater(updater, rowSelection),
+    onGlobalFilterChange: updater => valueUpdater(updater, globalFilter),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    globalFilterFn: 'includesString',
 })
 
 // Emit state changes
@@ -106,6 +110,7 @@ watch(sorting, (value) => emit('update:sorting', value))
 watch(columnFilters, (value) => emit('update:columnFilters', value))
 watch(columnVisibility, (value) => emit('update:columnVisibility', value))
 watch(rowSelection, (value) => emit('update:rowSelection', value))
+watch(globalFilter, (value) => emit('update:globalFilter', value))
 
 defineExpose({
     table,

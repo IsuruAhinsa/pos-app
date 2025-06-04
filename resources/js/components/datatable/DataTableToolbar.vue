@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { X } from 'lucide-vue-next'
+import { X, Search } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import DataTableFacetedFilter from './DataTableFacetedFilter.vue'
@@ -13,7 +13,7 @@ const props = defineProps({
     },
     searchColumn: {
         type: String,
-        default: 'title'
+        default: undefined
     },
     facetColumns: {
         type: Array,
@@ -21,7 +21,14 @@ const props = defineProps({
     }
 })
 
-const isFiltered = computed(() => props.table.getState().columnFilters.length > 0)
+const isFiltered = computed(() =>
+    props.table.getState().columnFilters.length > 0 ||
+    props.table.getState().globalFilter
+);
+
+const handleGlobalSearch = (event) => {
+    props.table.setGlobalFilter(event.target.value)
+};
 </script>
 
 <template>
@@ -34,6 +41,16 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
                 class="h-8 w-[150px] lg:w-[250px]"
                 @input="table.getColumn(searchColumn)?.setFilterValue($event.target.value)"
             />
+
+            <div v-else class="relative">
+                <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                    placeholder="Search ..."
+                    :model-value="table.getState().globalFilter || ''"
+                    class="h-8 pl-9 w-[150px] lg:w-[250px]"
+                    @input="handleGlobalSearch"
+                />
+            </div>
 
             <template v-for="facet in facetColumns" :key="facet.column">
                 <DataTableFacetedFilter
