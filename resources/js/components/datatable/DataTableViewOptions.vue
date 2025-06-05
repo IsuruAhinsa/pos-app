@@ -23,6 +23,27 @@ const columns = computed(() => props.table.getAllColumns()
         column =>
             typeof column.accessorFn !== 'undefined' && column.getCanHide(),
     ))
+
+const getHeaderTitle = (column: any) => {
+    // If header is a function that returns a DataTableColumnHeader component
+    if (typeof column.columnDef.header === 'function') {
+        try {
+            const headerResult = column.columnDef.header({ column })
+            return headerResult.props?.title || column.id
+        } catch {
+            return column.id
+        }
+    }
+    // If the header is directly a component with the title prop
+    if (column.columnDef.header?.props?.title) {
+        return column.columnDef.header.props.title
+    }
+    // Fallback to formatted column ID
+    return column.id
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim()
+}
 </script>
 
 <template>
@@ -48,7 +69,7 @@ const columns = computed(() => props.table.getAllColumns()
                 :model-value="column.getIsVisible()"
                 @update:model-value="(value) => column.toggleVisibility(!!value)"
             >
-                {{ column.id }}
+                {{ getHeaderTitle(column) }}
             </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
     </DropdownMenu>
