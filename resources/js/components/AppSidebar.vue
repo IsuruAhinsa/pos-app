@@ -36,7 +36,7 @@ const mainNavItems = [
                     {
                         title: 'Categories',
                         icon: Group,
-                        href: '#',
+                        href: '/categories',
                     },
                     {
                         title: 'Products',

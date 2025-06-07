@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -24,5 +25,7 @@ class AppServiceProvider extends ServiceProvider
         if (App::environment() == 'production') {
             URL::forceScheme('https');
         }
+
+        JsonResource::withoutWrapping();
     }
 }
