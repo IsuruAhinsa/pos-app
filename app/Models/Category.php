@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Kalnoy\Nestedset\NodeTrait;
@@ -11,7 +12,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Category extends Model
 {
-    use LogsActivity, NodeTrait, SoftDeletes, Userstamps;
+    use HasFactory, LogsActivity, NodeTrait, SoftDeletes, Userstamps;
 
     /**
      * The attributes that are mass assignable.

@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Interfaces\CategoryRepositoryInterface;
 use App\Models\Category;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -22,15 +23,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return Inertia::render('categories/CategoryList');
-    }
+        $categories = $this->categoryRepository->getCategoriesWithParent();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return Inertia::render('categories/CategoryList', [
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -38,7 +35,20 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        try {
+            $categoryData = $this->categoryRepository->prepareCategoryData($request->validated());
+
+            $this->categoryRepository->create($categoryData);
+        } catch (\Exception $exception) {
+            Log::error('Error storing category', [
+                'message' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+
+            return back()->withErrors([
+                'message' => 'Error encountered while storing category',
+            ]);
+        }
     }
 
     /**

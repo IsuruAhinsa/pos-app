@@ -64,8 +64,8 @@ const handleGlobalSearch = (event) => {
             <Button
                 v-if="isFiltered"
                 variant="ghost"
-                class="h-8 px-2 lg:px-3"
-                @click="table.resetColumnFilters()"
+                class="h-8 px-2 lg:px-3 cursor-pointer"
+                @click="searchColumn ? table.resetColumnFilters() : table.resetGlobalFilter()"
             >
                 Reset
                 <X class="ml-2 h-4 w-4" />

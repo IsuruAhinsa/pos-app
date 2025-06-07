@@ -2,4 +2,11 @@
 
 namespace App\Interfaces;
 
-interface CategoryRepositoryInterface extends BaseRepositoryInterface {}
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
+interface CategoryRepositoryInterface extends BaseRepositoryInterface
+{
+    public function getCategoriesWithParent(): AnonymousResourceCollection;
+
+    public function prepareCategoryData(array $data): array;
+}
